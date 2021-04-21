@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<head th:replace="fragments :: page_head(${pageTitle}, 'none')" />
+	<link rel="stylesheet" th:href="@{/richtext/richtext.min.css}">
+	<script th:src="@{/richtext/jquery.richtext.min.js}"></script>	
+</head>
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	
+	<div>
+		<h2>Site Settings</h2>
+	</div>
+	
+	<div th:if="${message != null}" class="alert alert-success text-center">
+		[[${message}]]
+	</div>
+			
+	<div>
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+		  <li class="nav-item">
+		    <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="countries-tab" data-toggle="tab" href="#countries" role="tab" aria-controls="countries" aria-selected="false">Countries</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="states-tab" data-toggle="tab" href="#states" role="tab" aria-controls="states" aria-selected="false">States</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="mail-server-tab" data-toggle="tab" href="#mailServer" role="tab" aria-controls="mailServer" aria-selected="false">Mail Server</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="mail-templates-tab" data-toggle="tab" href="#mailTemplates" role="tab" aria-controls="mailTemplates" aria-selected="false">Mail Templates</a>
+		  </li>		  
+		  <li class="nav-item">
+		    <a class="nav-link" id="payment-tab" data-toggle="tab" href="#payment" role="tab">Payment</a>
+		  </li>		  
+		</ul>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade show active p-3" id="general" role="tabpanel" aria-labelledby="general-tab">
+				<div th:replace="settings/general :: content">General Settings</div>
+			</div>
+			
+			<div class="tab-pane fade p-3" id="countries" role="tabpanel" aria-labelledby="countries-tab">
+				<div th:replace="settings/countries :: content">Countries</div>
+			</div>
+			
+			<div class="tab-pane fade p-3" id="states" role="tabpanel" aria-labelledby="states-tab">
+				<div th:replace="settings/states :: content">States</div>
+			</div>
+			
+			<div class="tab-pane fade p-3" id="mailServer" role="tabpanel" aria-labelledby="mail-server-tab">
+				<div th:replace="settings/mail_server :: content">Mail Server</div>
+			</div>
+			
+			<div class="tab-pane fade p-3" id="mailTemplates" role="tabpanel" aria-labelledby="mail-templates-tab">
+				<div th:replace="settings/mail_templates/mail_templates :: content">Mail Templates</div>
+			</div>			
+
+			<div class="tab-pane fade p-3" id="payment" role="tabpanel" aria-labelledby="payment-tab">
+				<div th:replace="settings/payment :: content"></div>
+			</div>			
+		</div>
+		
+	</div>
+					
+	<div class="toast d-flex justify-content-center align-items-center" role="alert" aria-live="polite" aria-atomic="true" data-delay="2500">
+	  <div role="alert" aria-live="assertive" aria-atomic="true">
+	  	<div class="toast-body">
+	  		<span id="toastMessage"></span>	  		
+	  	</div>
+	  </div>
+	</div>
+					
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>
+<script type="text/javascript">
+	var contextPath = "[[@{/}]]";
+	moduleURL = contextPath;
+	var crsfHeaderName = "[[${_csrf.headerName}]]";
+	var csrfValue = "[[${_csrf.token}]]";
+	
+	$(document).ready(function() {		
+		$("#customerVerifyContent").richText();
+		$("#orderConfirmationContent").richText();
+	});
+	
+</script>
+<script th:src="@{/js/countries.js}"></script>
+<script th:src="@{/js/states.js}"></script>
+<script th:src="@{/js/common_form.js}"></script>	
+</body>
+</html>

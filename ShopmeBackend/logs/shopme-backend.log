@@ -1,0 +1,5 @@
+20:39:02.759 [restartedMain] INFO  com.shopme.ShopmeAdminApplication                                                                    - Started ShopmeAdminApplication in 6.598 seconds (JVM running for 7.78)
+20:39:28.016 [Thread-8] INFO  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor                                     - Shutting down ExecutorService 'applicationTaskExecutor'
+20:39:28.028 [Thread-8] INFO  org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean                                   - Closing JPA EntityManagerFactory for persistence unit 'default'
+20:39:28.042 [Thread-8] INFO  com.zaxxer.hikari.HikariDataSource                                                                   - HikariPool-1 - Shutdown initiated...
+20:39:28.060 [Thread-8] INFO  com.zaxxer.hikari.HikariDataSource                                                                   - HikariPool-1 - Shutdown completed.

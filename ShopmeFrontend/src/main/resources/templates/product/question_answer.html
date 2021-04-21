@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<body>
+	<div th:fragment="content">
+		<div class="row"><div class="col"><hr/></div></div>
+		<div class="row m-1">
+			<h3 id="qa">Questions &amp; answers for this product:</h3>
+		</div>
+		<div class="row m-2">
+			<div class="col">
+				<th:block th:each="question : ${questions}">
+				<div class="row">
+					<div class="col-xs"><b>Question:</b></div>
+					<div class="col-xs ml-2">
+						<a th:id="'vu-' + ${question.id}" th:if="${question.upvotedByCurrentCustomer == true}" th:href="@{'/vote_question/' + ${question.id} + '/up'}" class="fas fa-sort-up fa-2x icon-green link-vote" th:qid="${question.id}" title="Undo vote up this question"></a>
+						<a th:id="'vu-' + ${question.id}" th:if="${question.upvotedByCurrentCustomer == false}" th:href="@{'/vote_question/' + ${question.id} + '/up'}" class="fas fa-sort-up fa-2x icon-dark link-vote" th:qid="${question.id}" title="Vote up this question"></a>
+					</div>
+					<div class="col-xs ml-2"><span th:id="'v' + ${question.id}">[[${question.votes}]]</span>&nbsp;Votes</div>
+					<div class="col-xs ml-2 mb-3">
+						<a th:id="'vd-' + ${question.id}" th:if="${question.downvotedByCurrentCustomer == true}" th:href="@{'/vote_question/' + ${question.id} + '/down'}" class="fas fa-sort-down fa-2x icon-green link-vote" th:qid="${question.id}" title="Undo vote down this question"></a>
+						<a th:id="'vd-' + ${question.id}" th:if="${question.downvotedByCurrentCustomer == false}" th:href="@{'/vote_question/' + ${question.id} + '/down'}" class="fas fa-sort-down fa-2x icon-dark link-vote" th:qid="${question.id}" title="Vote down this question"></a>
+					</div>				
+				</div>
+				<div class="row"><div class="col">[[${question.questionContent}]]</div></div>
+				<div class="row">
+					<div class="col ml-4">
+						<small>[[${question.asker.fullName}]], <div th:replace="fragments :: format_time(${question.askTime})"></div></small>
+					</div>
+				</div>
+				
+				<th:block th:if="${question.answered == true}">
+				<div class="row"><div class="col"><b>Answer:</b></div></div>
+				<div class="row"><div class="col">[[${question.answer}]]</div></div>
+				<div class="row"><div class="col ml-4"><small>[[${question.answerer.fullName}]], <div th:replace="fragments :: format_time(${question.answerTime})"></div></small></div></div>
+				</th:block>
+						
+				<div><hr/></div>
+				</th:block>
+			</div>
+		</div>
+		<div sec:authorize="isAuthenticated()">
+			<div>
+				<th:block th:if="${numberOfQuestions > 3}">
+					<a th:href="@{'/questions/' + ${product.alias}}">View all [[${numberOfQuestions}]] questions</a>&nbsp;&nbsp;
+				</th:block>				
+			</div>
+			<form class="form-inline my-2" id="formQuestion">
+				<textarea id="question" class="form-control" rows="2" cols="60" placeholder="Type your question here..." required></textarea>
+				&nbsp;&nbsp;
+				<button id="buttonPostQuestion" class="btn btn-secondary my-2">Submit</button>
+			</form>
+		</div>
+		<div sec:authorize="!isAuthenticated()">
+			<form th:action="@{'/ask_question/' + ${product.alias}}">
+				<th:block th:if="${numberOfQuestions > 3}">
+					<a th:href="@{'/questions/' + ${product.alias}}">View all [[${numberOfQuestions}]] questions</a>&nbsp;&nbsp;
+				</th:block>
+				<button class="btn btn-secondary" type="submit">Ask a Question</button>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

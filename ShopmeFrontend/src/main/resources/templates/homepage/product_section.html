@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<div th:fragment="content" th:remove="tag">
+		<div class="col-sm-2" th:each="productSection : ${section.productSections}" th:with="product = ${productSection.product}">
+			<div>
+				<a th:href="@{${product.URI}}" th:title="${product.name}">
+					<img th:src="@{${product.mainImagePath}}" height="100" />
+					<br/>
+					<b>[[${product.shortName}]]</b>
+				</a>
+			</div>
+			<div>
+				<table>
+					<tr>
+						<td><input type="text" class="kv-ltr-theme-svg-star rating-loading" dir="ltr" data-size="xs" th:value="${product.averageRating}" /></td>
+						<td><small>[[${product.reviewCount}]]</small></td>
+					</tr>
+				</table>
+			</div>
+			<div>
+				<div th:replace="fragments :: discountPrice">Discount price</div>
+				<span th:if="${product.discountPercent > 0}">
+					<div th:replace="fragments :: listPrice">List price</div>
+				</span>
+			</div>					
+		</div>
+	</div>
+</body>
+</html>

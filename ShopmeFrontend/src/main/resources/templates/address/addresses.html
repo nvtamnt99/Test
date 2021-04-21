@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="fragments :: topnav">Top Navigation Menu</div>
+		
+	<div th:replace="fragments :: searchnav">Search Navigation</div>
+	
+	<div th:replace="fragments :: breadcrumb">Breadcrumb Navigation</div>	
+		
+	<div class="text-center">
+		<th:block th:if="${param.redirect}">
+			<h2>Choose a Shipping Address</h2>
+		</th:block>
+		<th:block th:unless="${param.redirect}">
+			<h2>Manage Your Shipping Address</h2>
+		</th:block>
+				
+		<th:block th:if="${param.redirect}">
+			<a th:href="@{/customer/address/new(redirect=checkout)}">Create a New Address</a>
+		</th:block>
+		<th:block th:unless="${param.redirect}">
+			<a th:href="@{/customer/address/new}">Create a New Address</a>
+		</th:block>		
+		<br/>
+	</div>
+		
+	<div class="row m-1">
+		<div class="col-sm-6 mt-2">
+			<div class="card">
+				<div class="card-header">
+					<div class="row">
+						<div class="col-8">
+							<b>Your Primary Address</b>
+							<span class="text-danger" th:if="${defaultAddressId == 0}">
+								<th:block th:if="${param.redirect}">[Currently Selected]</th:block>
+								<th:block th:unless="${param.redirect}">[Default]</th:block>
+							</span>
+							<a class="text-success" th:unless="${defaultAddressId == 0}" th:href="@{${param.redirect} ? '/customer/address/choose/0?redirect=checkout' : '/customer/address/choose/0'}">
+								<th:block th:if="${param.redirect}">[Choose]</th:block>
+								<th:block th:unless="${param.redirect}">[Set as Default]</th:block>							
+							</a>							
+						</div>
+						<div class="col">
+							<div class="float-right">
+								<a class="fas fa-edit icon-dark" title="Edit this address" th:href="@{/customer(redirect=address)}"></a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card-body">
+					<p>[[${customer.address}]]</p>
+				</div>
+			</div>			
+		</div>
+			
+		<th:block th:each="add, status : ${listAddresses}">
+		<div class="col-sm-6 mt-2">
+			<div class="card">
+				<div class="card-header">
+					<div class="row">
+						<div class="col-8">
+							<b>Address #[[${status.count} + 1]]</b>
+							<span class="text-danger" th:if="${defaultAddressId == add.id}">
+								<th:block th:if="${param.redirect}">[Currently Selected]</th:block>
+								<th:block th:unless="${param.redirect}">[Default]</th:block>
+							</span>
+							<a class="text-success" th:unless="${defaultAddressId == add.id}" th:href="@{${param.redirect} ? '/customer/address/choose/' + ${add.id} + '?redirect=checkout' : '/customer/address/choose/' + ${add.id}}">
+								<th:block th:if="${param.redirect}">[Choose]</th:block>
+								<th:block th:unless="${param.redirect}">[Set as Default]</th:block>
+							</a>
+						</div>
+						<div class="col">
+							<div class="float-right">
+								<a class="fas fa-edit icon-dark" title="Edit this address" th:href="@{'/customer/address/edit/' + ${add.id}}"></a>
+								&nbsp;&nbsp;
+								<a class="fas fa-trash icon-dark link-delete" title="Delete this address" th:href="@{/show_delete_modal(type=address,keyField=${add.firstName},id=${add.id})}"></a>
+							</div>
+						</div>
+					</div>				
+				</div>
+				
+				
+				<div class="card-body">
+					<p>[[${add}]]</p>
+				</div>
+			</div>			
+		</div>
+		</th:block>
+	</div>
+
+	<div th:replace="fragments :: standard_modal">Standard Modal Dialog</div>	
+		
+	<div th:replace="fragments :: footer">Static footer</div>	
+</div>	
+<script type="text/javascript">
+	contextPath = "[[@{/customer}]]";
+	var crsfHeaderName = "[[${_csrf.headerName}]]";
+	var csrfValue = "[[${_csrf.token}]]";
+	
+	$(document).ready(function(){
+
+		$(".link-delete").on('click', function (e) {
+			e.preventDefault();
+			$('#myModal').modal('show').find('.modal-content').load($(this).attr('href'));		  
+		});
+	});	
+</script>
+</body>
+</html>

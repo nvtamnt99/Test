@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	
+	<div class="text-center">
+		<h2>Your Account Details</h2>
+	</div>
+
+	<div th:if="${message != null}" class="alert alert-success text-center">
+		[[${message}]]
+	</div>
+				
+	<form th:action="@{/account/update}" th:object="${user}" method="post"
+		enctype="multipart/form-data" 
+		style="max-width: 450px; margin:  0 auto;"
+		>
+	<div class="border border-secondary rounded p-3">
+		<input type="hidden" th:field="*{id}" />
+		<p>
+			<label>E-mail: </label>
+			<input type="email" th:field="*{email}" class="form-control" readonly="readonly" /> 
+		</p>
+		<p>
+			<label>First Name: </label>
+			<input type="text" th:field="*{firstName}" class="form-control" required minlength="2" maxlength="45" /> 
+		</p>
+		<p>
+			<label>Last Name: </label>
+			<input type="text" th:field="*{lastName}" class="form-control" required minlength="2" maxlength="45" /> 
+		</p>		
+		<p>
+			<label>Password: </label>
+			<input type="password" th:field="*{password}" class="form-control" minlength="4"
+				oninput="checkPasswordMatch(document.getElementById('confirmPassword'))" 
+				placeholder="leave blank if you don't want to change password" />
+		</p>
+		<p>
+			<label>Confirm Password: </label>
+			<input type="password" class="form-control" minlength="4" oninput="checkPasswordMatch(this)" id="confirmPassword" />
+		</p>		
+		<div>
+			<label class="form-check-label">Assigned Roles:</label>
+			<label><b>[[${user.roles}]]</b></label>
+		</div>
+		<p>
+			<label>Photos: </label>
+			<input type="file" id="fileImage" name="image" accept="image/png, image/jpeg" />
+			<input type="hidden" th:field="*{photos}" />
+		</p>
+		<p>
+			<img id="thumbnail" alt="Image preview" class="img-fluid"
+				th:src="@{${user.photos} != null ? ${user.photosImagePath} : '/user-photos/default-user.png'}"
+			 />
+		</p>		
+		<p class="text-center">
+			<input type="submit" value="Update" class="btn btn-primary m-3" />
+			<input type="button" value="Cancel" class="btn btn-secondary" id="buttonCancel" />
+		</p>				
+	</div>
+	</form>
+	
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	moduleURL = "[[@{/}]]";
+	
+	function checkPasswordMatch(fieldRetypePassword) {
+		if (fieldRetypePassword.value != $("#password").val()) {
+			fieldRetypePassword.setCustomValidity("Passwords do not match!");
+		} else {
+			fieldRetypePassword.setCustomValidity("");
+		}
+	}		
+</script>
+<script th:src="@{/js/common_form.js}"></script>	
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:fragment="html_head(removeTag)" th:remove="${removeTag}">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+	<title>[[${pageTitle}]] - [[${SITE_NAME}]]</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  	<link rel="stylesheet" th:href="@{/fontawesome/all.css}" />
+  	<link rel="stylesheet" th:href="@{/style.css}" />	
+</head>
+<body>
+	<div th:fragment="topnav" class="row">
+		<div class="col">
+			<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+				<a class="navbar-brand" th:href="@{/}">
+			    	<img alt="Site Logo" th:src="@{${SITE_LOGO}}" />										
+				</a>
+			  	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar,#searchNavbar">
+			    	<span class="navbar-toggler-icon"></span>
+			  	</button>			
+			  	<div class="collapse navbar-collapse" id="mainNavbar">			
+					<ul class="navbar-nav">
+						<!-- Start of Dynamic Header Menu Items -->
+						<th:block th:each="headerMenu : ${headerMenuItems}">
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{'/m/' + ${headerMenu.alias}}">[[${headerMenu.title}]]</a>
+						</li>						
+						</th:block>
+						<!-- End of Dynamic Header Menu Items -->
+						
+						<th:block sec:authorize="!isAuthenticated()">
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/login}">Login</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/register}">Register</a>
+						</li>					
+						</th:block>
+	
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/contact}">Contact</a>
+						</li>
+												
+					</ul>
+				</div>
+			</nav>
+		</div>
+	</div>
+	
+	<div th:fragment="footer" class="row mt-3">
+		<div class="col">
+			<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+			  	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainFooterNavbar">
+			    	<span class="navbar-toggler-icon"></span>
+			  	</button>			
+			  	<div class="collapse navbar-collapse" id="mainFooterNavbar">			
+					<ul class="navbar-nav">
+						<th:block th:each="footerMenu : ${footerMenuItems}">
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{'/m/' + ${footerMenu.alias}}">[[${footerMenu.title}]]</a>
+						</li>						
+						</th:block>											
+					</ul>
+				</div>
+			</nav>
+		</div>
+		<div class="col-12 text-center">
+			<p>[[${COPYRIGHT}]]</p>
+		</div>		
+	</div>	
+	
+	<div th:fragment="searchnav" class="row">
+		<div class="col-md">
+			<th:block sec:authorize="isAuthenticated()">	
+			<form th:action="@{/logout}" method="post" th:hidden="true" name="logoutForm">
+				<input type="submit" value="Logout" />
+			</form>
+			</th:block>		
+			<nav class="navbar navbar-expand-sm bg-light">
+			  	<div class="collapse navbar-collapse" id="searchNavbar">
+					<form class="form-inline my-2 my-lg-0" th:action="@{/search}" method="get">
+						<input type="search" name="keyword" th:value="${keyword}" 
+							class="form-control mr-sm-2" placeholder="keyword" required />
+						&nbsp;
+						<input type="submit" value="Search" class="btn btn-outline-success my-2 my-sm-0" />
+					</form>			  				
+					<ul class="navbar-nav">						
+						<th:block sec:authorize="isAuthenticated()">
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/customer}"><b>[[${#request.userPrincipal.principal.fullName}]]</b></a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/customer/address}">Addresses</a>
+						</li>						
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/customer/questions}">Questions</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/customer/reviews}">Reviews</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/customer/orders}">Orders</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/customer/cart}">Cart</a>
+						</li>
+						</th:block>
+						
+						
+						<th:block sec:authorize="isAuthenticated()">
+						<li class="nav-item">
+							<a class="nav-link" href="javascript: document.logoutForm.submit()">Logout</a>
+						</li>					
+						</th:block>						
+					</ul>
+				</div>			
+			</nav>
+		</div>
+	</div>
+	
+	<th:block th:fragment="breadcrumb" th:if="${parents != null && !parents.empty}">
+	<div class="row">		
+		<div class="col">
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item">
+						<a th:href="@{/}">Home</a>
+					</li>
+					<li th:each="cat : ${parents}" class="breadcrumb-item">
+						<a th:href="@{'/c/' + ${cat.alias}}">[[${cat.name}]]</a>
+					</li>
+					<li th:if="${product != null}" class="breadcrumb-item">
+						<span>[[${product.name}]]</span>
+					</li>
+				</ol>
+			</nav>
+		</div>
+	</div>		
+	</th:block>
+		
+	<div th:fragment="discountPrice" th:remove="tag">
+		<span th:style="${product.discountPercent > 0 ? 'font-size: larger; color: darkred' : ''}">				
+			<span th:if="${CURRENCY_SYMBOL_POSITION == 'before'}" th:remove="tag">[[${CURRENCY_SYMBOL}]]</span>[[${#numbers.formatDecimal(product.discountPrice, 1, THOUSANDS_POINT_TYPE, DECIMAL_DIGITS, DECIMAL_POINT_TYPE)}]]<span th:if="${CURRENCY_SYMBOL_POSITION == 'after'}" th:remove="tag">[[${CURRENCY_SYMBOL}]]</span>
+		</span>
+	</div>
+	
+	<div th:fragment="listPrice" th:remove="tag">
+		<del>
+			<span th:if="${CURRENCY_SYMBOL_POSITION == 'before'}" th:remove="tag">[[${CURRENCY_SYMBOL}]]</span>[[${#numbers.formatDecimal(product.price, 1, THOUSANDS_POINT_TYPE, DECIMAL_DIGITS, DECIMAL_POINT_TYPE)}]]<span th:if="${CURRENCY_SYMBOL_POSITION == 'after'}" th:remove="tag">[[${CURRENCY_SYMBOL}]]</span>
+		</del>	
+	</div>
+	
+	<div th:fragment="currency_format(amount)" th:remove="tag">
+		<span th:if="${CURRENCY_SYMBOL_POSITION == 'before'}" th:remove="tag">[[${CURRENCY_SYMBOL}]]</span>[[${#numbers.formatDecimal(amount, 1, THOUSANDS_POINT_TYPE, DECIMAL_DIGITS, DECIMAL_POINT_TYPE)}]]<span th:if="${CURRENCY_SYMBOL_POSITION == 'after'}" th:remove="tag">[[${CURRENCY_SYMBOL}]]</span>
+	</div>	
+	
+	<div th:fragment="standard_modal" class="modal fade text-center" id="myModal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	
+	      <div class="modal-header">
+	        <h4 class="modal-title" id="modalTitle">Warning</h4>
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	      </div>
+	
+	      <div class="modal-body">
+	        <span id="modalBody"></span>
+	      </div>
+	
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+	      </div>
+	
+	    </div>
+	  </div>
+	</div>
+	
+	<div th:fragment="deliver_date(date)" th:remove="tag">
+		<span th:text="${#dates.format(date, 'E, dd MMM yyyy')}">Deliver date</span>
+	</div>
+	
+	<div th:fragment="format_time(dateTime)" th:remove="tag">
+		<span th:text="${#dates.format(dateTime, 'yyyy-MM-dd HH:mm:ss')}">Date Time</span>
+	</div>
+	
+	<div th:fragment="currency_input(amount)" th:remove="tag">
+		<input type="text" readonly class="form-control" th:value="${(currencySymbolPosition == 'before' ? currencySymbol : '') + #numbers.formatDecimal(amount, 1, thousandsPointType, decimalDigits, decimalPointType) + (currencySymbolPosition == 'after' ? currencySymbol : '')}">
+
+	</div>
+	
+	<div th:fragment="search_form_and_message(url)" th:remove="tag">
+		<div>
+			<form th:action="@{${url}}" class="form-inline m-3">
+				<input type="hidden" name="sortField" th:value="${sortField}" />
+				<input type="hidden" name="sortDir" th:value="${sortDir}" />
+				Filter: &nbsp;<input type="search" name="keyword" th:value="${keyword}" class="form-control" placeholder="Keyword" required />
+				&nbsp;&nbsp;
+				<input type="submit" value="Search" class="btn btn-primary" />
+				&nbsp;&nbsp;
+				<input type="button" value="Clear" class="btn btn-secondary" onclick="clearFilter()" />
+			</form>
+		</div>
+		<div th:if="${message != null}" class="alert alert-success text-center">
+			[[${message}]]
+		</div>	
+	</div>
+		
+	<div th:fragment="pagination(itemName, baseURL)" th:remove="tag">		
+		<div class="text-center m-1" th:if="${totalItems > 0}">
+			<span>Showing [[${itemName}]] # [[${startCount}]] to [[${endCount}]] of [[${totalItems}]]</span>
+		</div>
+		<div class="text-center m-1" th:unless="${totalItems > 0}">
+			<span>No items found</span>
+		</div>
+				
+		<div th:if="${totalPages > 1}" th:with="pageUrlPostfix = '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}">
+			<nav>
+			 	<ul class="pagination justify-content-center flex-wrap" th:with="pageUrlPrefix = '/' + ${baseURL} + '/page/'">
+					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:href="@{${pageUrlPrefix} + '1' + ${pageUrlPostfix}}" class="page-link">First</a>	
+					</li>
+					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:href="@{${pageUrlPrefix} + ${currentPage - 1} + ${pageUrlPostfix}}" class="page-link">Previous</a>
+					</li>
+					<li th:each="i: ${#numbers.sequence(1, totalPages)}" th:class="${currentPage != i ? 'page-item' : 'page-item active'}">
+						<a th:href="@{${pageUrlPrefix} + ${i} + ${pageUrlPostfix}}" class="page-link">[[${i}]]</a>
+					</li>
+					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:href="@{${pageUrlPrefix} + ${currentPage + 1} + ${pageUrlPostfix}}" class="page-link">Next</a>
+					</li>
+					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:href="@{${pageUrlPrefix} + ${totalPages} + ${pageUrlPostfix}}" class="page-link">Last</a>
+					</li>
+				</ul>
+			</nav>
+		</div>	
+	</div>					
+</body>
+</html>

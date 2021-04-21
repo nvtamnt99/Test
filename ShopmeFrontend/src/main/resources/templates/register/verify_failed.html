@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container">
+	<div th:replace="fragments :: topnav">Top Navigation Menu</div>
+		
+	<div class="text-center">
+		<h2>Customer Verification</h2>
+		<h4>Your account was already verified, or the verification code is invalid.</h4>
+	</div>
+			
+	<div th:replace="fragments :: footer">Static footer</div>	
+</div>	
+</body>
+</html>

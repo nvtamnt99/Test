@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	<div>
+		<h2>Manage Orders</h2>
+	</div>
+
+	<div th:replace="fragments :: search_form_and_message(url='/orders/page/1')">Search Form</div>	
+		
+	<div>
+		<table class="table table-striped table-bordered table-hover table-responsive-xl">
+			<thead class="thead-dark" th:with="headerUrlPrefix = '/orders/page/' + ${currentPage} + '?sortField='">
+				<tr th:with="headerUrlPostfix = '&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}">
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'id' + ${headerUrlPostfix}}" class="text-white">ID</a>
+						<span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>					
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'customer' + ${headerUrlPostfix}}" class="text-white">Customer</a>
+						<span th:if="${sortField == 'customer'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'total' + ${headerUrlPostfix}}" class="text-white">Total</a>
+						<span th:if="${sortField == 'total'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'orderTime' + ${headerUrlPostfix}}" class="text-white">Order Time</a>
+						<span th:if="${sortField == 'orderTime'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'city' + ${headerUrlPostfix}}" class="text-white">Destination</a>
+						<span th:if="${sortField == 'city'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>					
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'paymentMethod' + ${headerUrlPostfix}}" class="text-white">Payment Method</a>
+						<span th:if="${sortField == 'paymentMethod'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>					
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'status' + ${headerUrlPostfix}}" class="text-white">Status</a>
+						<span th:if="${sortField == 'status'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>					
+					</th>					
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="order : ${listOrders}">
+					<td th:text="${order.id}">ID</td>
+					<td>
+						<a th:href="@{'/customers/detail/' + ${order.customer.id}}" class="small-link">[[${order.customer.fullName}]]</a>
+					</td>
+					<td>
+						<div th:replace="fragments :: currency_format(${order.total})">Total</div>
+					</td>
+					<td><div th:replace="fragments :: format_time(${order.orderTime})">Order Time</div></td>
+					<td th:text="${order.destination}">Destination</td>
+					<td th:text="${order.paymentMethod}">Payment  method</td>
+					<td th:text="${order.status}">Status</td>
+					<td>
+						<a class="fas fa-file-alt fa-2x icon-green detail-link" th:href="@{'/orders/detail/' + ${order.id}}" title="View details of this order"></a>
+						&nbsp;&nbsp;&nbsp;					
+						<a class="fas fa-edit fa-2x icon-green" th:href="@{'/orders/edit/' + ${order.id}}" title="Edit this order"></a> 
+						&nbsp;&nbsp;&nbsp;
+						<a class="fas fa-trash fa-2x icon-dark small-link" th:href="@{/show_delete_modal(type=orders,keyField=${order.customer.fullName},id=${order.id})}" title="Delete this order"></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div th:replace="fragments :: pagination(itemName = 'orders')">Static Pagination</div>
+
+	<div class="modal fade text-center" id="smallModal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>	
+	
+	<div class="modal fade" id="largeModal">
+	  <div class="modal-dialog modal-xl">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>	
+		
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	$(document).ready(function(){
+		handleDeleteLink();
+		handleDetailLink();
+	});
+	
+	function handleDeleteLink() {
+		$(".small-link").on("click", function(e) {
+			e.preventDefault();
+			$('#smallModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});		
+	}
+	
+	function handleDetailLink() {
+		$(".detail-link").on("click", function(e) {
+			e.preventDefault();
+			$('#largeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});		
+	}	
+	
+	function clearFilter() {
+		window.location = "[[@{'/orders/'}]]";
+	}	
+</script>
+</body>
+</html>

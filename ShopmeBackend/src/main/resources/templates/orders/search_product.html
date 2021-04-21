@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	
+	<div>
+		<form class="form-inline my-2 my-lg-0" th:action="@{/orders/search_product}" method="post">
+			<input type="search" name="keyword" th:value="${keyword}" 
+				class="form-control mr-sm-2" placeholder="product name" required />
+			&nbsp;
+			<input type="submit" value="Search" class="btn btn-outline-success my-2 my-sm-0" />
+		</form>
+	</div>
+
+	<div class="row">
+		<div class="col" th:each="product : ${listProducts}">
+			<div>
+				<a href="" th:title="${product.name}" th:pid="${product.id}" class="link-product">
+					<img th:src="@{${product.mainImagePath}}" height="150" />
+					<br/>
+					<b>[[${product.shortName}]]</b>
+				</a>
+			</div>			
+		</div>
+	</div>	
+	
+	<div class="text-center m-1" th:if="${totalItems > 0}">
+		<span>Showing results # [[${startCount}]] to [[${endCount}]] of [[${totalItems}]]</span>
+	</div>
+	<div th:if="${totalItems <= 0 && keyword != null}">
+		<h3>No match found for keyword '[[${keyword}]]'.</h3>
+	</div>
+	
+	<div th:if="${totalPages > 1}" th:with="pageUrlPostfix = '?keyword=' + ${keyword}">
+		<nav>
+		 	<ul class="pagination justify-content-center flex-wrap" th:with="pageUrlPrefix = '/orders/search_product/page/'">
+				<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+					<a th:href="@{${pageUrlPrefix} + '1' + ${pageUrlPostfix}}" class="page-link">First</a>	
+				</li>
+				<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+					<a th:href="@{${pageUrlPrefix} + ${currentPage - 1} + ${pageUrlPostfix}}" class="page-link">Previous</a>
+				</li>
+				<li th:each="i: ${#numbers.sequence(1, totalPages)}" th:class="${currentPage != i ? 'page-item' : 'page-item active'}">
+					<a th:href="@{${pageUrlPrefix} + ${i} + ${pageUrlPostfix}}" class="page-link">[[${i}]]</a>
+				</li>
+				<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+					<a th:href="@{${pageUrlPrefix} + ${currentPage + 1} + ${pageUrlPostfix}}" class="page-link">Next</a>
+				</li>
+				<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+					<a th:href="@{${pageUrlPrefix} + ${totalPages} + ${pageUrlPostfix}}" class="page-link">Last</a>
+				</li>
+			</ul>
+		</nav>
+	</div>	
+</div>	
+<script type="text/javascript">
+	$(document).ready(function() {
+		handleProductLink();
+	});
+	
+	function handleProductLink() {
+		$(".link-product").on("click", function(e) {
+			e.preventDefault();
+			productId = $(this).attr('pid'); 
+			window.parent.addProduct(productId);
+		});		
+	}	
+</script>
+</body>
+</html>

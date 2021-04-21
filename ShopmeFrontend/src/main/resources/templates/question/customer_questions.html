@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="fragments :: topnav">Top Navigation Menu</div>
+	<div th:replace="fragments :: searchnav">Search Navigation</div>
+	<div class="text-center">
+		<h1>Questions asked by me</h1>
+	</div>
+
+	<div th:replace="fragments :: search_form_and_message(url='/customer/questions/page/1')">Search Form</div>
+	
+	<div>
+		<table class="table table-striped table-bordered table-hover table-responsive-xl">
+			<thead class="thead-dark" th:with="headerUrlPrefix = '/customer/questions/page/' + ${currentPage} + '?sortField='">
+				<tr th:with="headerUrlPostfix = '&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}">
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'id' + ${headerUrlPostfix}}" class="text-white">ID</a>
+						<span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th width="25%">
+						<a th:href="@{${headerUrlPrefix} + 'product' + ${headerUrlPostfix}}" class="text-white">Product</a>
+						<span th:if="${sortField == 'product'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th width="25%">
+						<a th:href="@{${headerUrlPrefix} + 'questionContent' + ${headerUrlPostfix}}" class="text-white">Question</a>
+						<span th:if="${sortField == 'questionContent'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'askTime' + ${headerUrlPostfix}}" class="text-white">Ask Time</a>
+						<span th:if="${sortField == 'askTime'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>					
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'approved' + ${headerUrlPostfix}}" class="text-white">Approval</a>
+						<span th:if="${sortField == 'approved'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>Answered</th>					
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="question : ${listQuestions}">
+					<td th:text="${question.id}">ID</td>
+					<td>
+						<a th:href="@{${question.product.URI}}" target="_blank" th:title="${question.product.name}">[[${question.product.shortName}]]</a>
+					</td>
+					<td th:text="${question.questionContent}">Question</td>
+					<td th:text="${question.askTime}">Ask Time</td>
+					
+					<td>
+						<span th:if="${question.approved == true}" class="fas fa-check-circle fa-2x icon-green"></span>
+						<span th:unless="${question.approved == true}" class="fas fa-circle fa-2x icon-dark"></span>
+					</td>
+					
+					<td>
+						<span th:if="${question.answered == true}" class="fas fa-check-circle fa-2x icon-green"></span>
+						<span th:unless="${question.answered == true}" class="fas fa-circle fa-2x icon-dark"></span>
+					</td>					
+
+					<td>
+						<a class="fas fa-file-alt fa-2x icon-green link-detail" th:href="@{'/customer/questions/detail/' + ${question.id}}" title="View details of this question"></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div th:replace="fragments :: pagination(itemName = 'questions', baseURL = 'customer/questions')">Static Pagination</div>
+	
+	<div class="modal fade text-center" id="largeModal">
+	  <div class="modal-dialog modal-xl">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>	
+		
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	$(document).ready(function(){
+		handleViewDetailLinks();
+	});
+	
+	function handleViewDetailLinks() {
+		$(".link-detail").on("click", function(e) {
+			e.preventDefault();
+			$('#largeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});
+	}
+	
+	
+	function clearFilter() {
+		window.location = "[[@{'/customer/questions/'}]]";
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: page_head(${pageTitle}, 'none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	<div>
+		<h2>Manage Brands</h2>
+		<a th:href="@{/brands/new}" class="fas fa-folder-plus fa-2x icon-dark mr-2"></a>
+		
+		<a th:href="@{/brands/export}" class="fas fa-file-csv fa-2x icon-dark mr-2"></a>
+	</div>
+
+	<div th:replace="fragments :: search_form_and_message(url='/brands/page/1')">Search Form</div>
+	
+	<div>
+		<table class="table table-striped table-bordered table-hover table-responsive-xl">
+			<thead class="thead-dark" th:with="headerUrlPrefix = '/brands/page/' + ${currentPage} + '?sortField='">
+				<tr th:with="headerUrlPostfix = '&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}">
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'id' + ${headerUrlPostfix}}" class="text-white">Brand ID</a>
+						<span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>Logo</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'name' + ${headerUrlPostfix}}" class="text-white">Brand Name</a>
+						<span th:if="${sortField == 'name'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'categories' + ${headerUrlPostfix}}" class="text-white">Categories</a>
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="brand : ${listBrands}">
+					<td th:text="${brand.id}">Brand ID</td>
+					<td>
+						<span th:if="${brand.logo == null}" class="fas fa-image fa-3x icon-silver"></span>
+						<img th:unless="${brand.logo == null}" th:src="@{${brand.logoImagePath}}" style="width: 100px"/>
+					</td>
+					<td th:text="${brand.name}">Full Name</td>
+					<td>
+						<span th:each="category : ${brand.categories}" class="badge badge-secondary m-1">[[${category.name}]]</span>
+					</td>
+
+					<td>
+						<a class="fas fa-edit fa-2x icon-green" th:href="@{'/brands/edit/' + ${brand.id}}" title="Edit this brand"></a> 
+						&nbsp;&nbsp;&nbsp;
+						<a class="fas fa-trash fa-2x icon-dark li-modal" th:href="@{/show_delete_modal(type=brands,keyField=${brand.name},id=${brand.id})}" title="Delete this brand"></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div th:replace="fragments :: pagination('/brands', 'brands')">Static Pagination</div>
+	
+	<div class="modal fade text-center" id="theModal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>
+	
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	$(document).ready(function(){
+
+		$(".li-modal").on('click', function (e) {
+		  e.preventDefault();
+		  $('#theModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});
+	});
+	
+	function clearFilter() {
+		window.location = "[[@{'/brands/'}]]";
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<div th:fragment="status" th:remove="tag">
+		<a th:if="${cat.enabled == true}" class="fas fa-check-circle fa-2x icon-green"
+			th:href="@{'/categories/' + ${cat.id} + '/enabled/false'}"
+			title="Disable this category"
+			>
+		</a>
+		<a th:unless="${cat.enabled == true}" class="fas fa-circle fa-2x icon-dark"
+			th:href="@{'/categories/' + ${cat.id} + '/enabled/true'}"
+			title="Enable this category"
+			>
+		</a>
+	</div>
+	
+	<div th:fragment="actions" th:remove="tag">
+		<a class="fas fa-edit fa-2x icon-green" th:href="@{'/categories/edit/' + ${cat.id}}" title="Edit this category"></a> 
+		&nbsp;&nbsp;&nbsp;
+		
+		<th:block th:if="${cat.hasChildren == false}">
+		<a class="fas fa-trash fa-2x icon-dark link-delete" th:href="@{'/categories/delete/' + ${cat.id}}" 
+			th:rowId="${cat.id}" title="Delete this category"></a>
+		</th:block>	
+	</div>					
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	
+	<div>
+		<h2>Manage Orders | [[${pageTitle}]]</h2>
+	</div>
+		
+	<form th:action="@{/order/save}" th:object="${order}" method="post" onsubmit="return processCurrencyFieldsBeforeSubmit();">
+	<input type="hidden" th:field="*{id}" />
+	<div>
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+		  <li class="nav-item">
+		    <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="products-tab" data-toggle="tab" href="#products" role="tab" aria-controls="products" aria-selected="false">Products</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="shipping-tab" data-toggle="tab" href="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Shipping</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="track-tab" data-toggle="tab" href="#track" role="tab" aria-controls="details" aria-selected="false">Track</a>
+		  </li>		  
+		</ul>
+		<div class="tab-content" id="myTabContent">
+		  <div class="tab-pane fade show active p-3" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+			<div th:replace="orders/overview :: content">Order Overview Form</div>  	  
+		  </div>
+		  
+		  <div class="tab-pane fade p-3" id="products" role="tabpanel" aria-labelledby="products-tab">
+			<div th:replace="orders/products :: content">Products</div>  
+		  </div>
+		  
+		  <div class="tab-pane fade p-3" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
+			<div th:replace="orders/shipping :: content">Shipping</div>
+		  </div>
+		  
+		  <div class="tab-pane fade p-3" id="track" role="tabpanel" aria-labelledby="track-tab">
+			<div th:replace="orders/track:: content">Track</div>		  						  	 
+		  </div>
+		 </div>
+	</div>
+	<div>
+		<p class="text-center">
+			<input type="submit" value="Save" class="btn btn-primary m-3" />
+			<input type="button" value="Cancel" class="btn btn-secondary" id="buttonCancel" />
+		</p>	
+	</div>			
+	</form>
+	
+	<div class="modal fade text-center" id="myModal">
+	  <div class="modal-dialog modal-lg">
+	    <div class="modal-content">
+	
+	      <div class="modal-header">
+	        <h4 class="modal-title" id="modalTitle">Add Product</h4>
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	      </div>
+	
+	      <div class="embed-responsive embed-responsive-16by9">
+	        <iframe class="embed-responsive-item"></iframe>
+	      </div>
+	
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+	      </div>
+	
+	    </div>
+	  </div>
+	</div>
+		
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script th:src="@{/js/jquery.number.min.js}"></script>
+<script th:src="@{/js/order_products.js}"></script>
+<script th:src="@{/js/order_track.js}"></script>
+<script type="text/javascript">
+	contextPath = "[[@{/}]]";
+	
+	$(document).ready(function() {
+		$('#buttonCancel').click(function() { 
+			window.location = "[[@{/orders}]]";	
+		});
+		
+	});
+</script>	
+</body>
+</html>

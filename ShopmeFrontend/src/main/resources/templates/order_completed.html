@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="fragments :: topnav">Top Navigation Menu</div>		
+	<div th:replace="fragments :: searchnav">Search Navigation</div>
+	
+		
+	<div class="text-center border border-secondary rounded m-3 p-3">
+		<h2>Your Order has been Completed!</h2>
+		<h4>A confirmation email has been sent to you.</h4>
+		<h4>Kindly check your email for the details.</h4>
+		<h4><a th:href="@{/customer/orders}">Click here</a> to manage and track your order.</h4>
+	</div>
+			
+	
+	<div th:replace="fragments :: footer">Static footer</div>	
+</div>	
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: page_head(${pageTitle}, 'none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	<div>
+		<h2>Manage Customers</h2>
+		<a th:href="@{/customers/export}">Export to CSV</a>			
+	</div>
+
+	<div th:replace="fragments :: search_form_and_message(url='/customers/page/1')">Search Form</div>
+
+	<div>
+		<table class="table table-striped table-bordered table-hover table-responsive-xl">
+			<thead class="thead-dark" th:with="headerUrlPrefix = '/customers/page/' + ${currentPage} + '?sortField='">
+				<tr th:with="headerUrlPostfix = '&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}">
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'id' + ${headerUrlPostfix}}" class="text-white">ID</a>
+						<span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'firstName' + ${headerUrlPostfix}}" class="text-white">First Name</a>
+						<span th:if="${sortField == 'firstName'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'lastName' + ${headerUrlPostfix}}" class="text-white">Last Name</a>
+						<span th:if="${sortField == 'lastName'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>					
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'email' + ${headerUrlPostfix}}" class="text-white">E-mail</a>
+						<span th:if="${sortField == 'email'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'city' + ${headerUrlPostfix}}" class="text-white">City</a>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'state' + ${headerUrlPostfix}}" class="text-white">State</a>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'country' + ${headerUrlPostfix}}" class="text-white">Country</a>
+					</th>					
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'enabled' + ${headerUrlPostfix}}" class="text-white">Enabled</a>
+						<span th:if="${sortField == 'enabled'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="customer : ${listCustomers}">
+					<td th:text="${customer.id}">Customer ID</td>
+					<td th:text="${customer.firstName}">First Name</td>
+					<td th:text="${customer.lastName}">Last Name</td>
+					<td th:text="${customer.email}">E-mail</td>
+					<td th:text="${customer.city}">City</td>
+					<td th:text="${customer.state}">State</td>
+					<td th:text="${customer.country} != null ? ${customer.country.name} : ''">Country</td>
+					<td>
+						<a th:if="${customer.enabled == true}" class="fas fa-check-circle fa-2x icon-green"
+							th:href="@{'/customers/' + ${customer.id} + '/enabled/false'}"
+							title="Disable this customer"
+							>
+						</a>
+						<a th:unless="${customer.enabled == true}" class="fas fa-circle fa-2x icon-dark"
+							th:href="@{'/customers/' + ${customer.id} + '/enabled/true'}"
+							title="Enable this customer"
+							>
+						</a>
+					</td>
+					<td>
+						<a class="fas fa-file-alt fa-2x icon-green link-detail" th:href="@{'/customers/detail/' + ${customer.id}}" title="View details of this customer"></a>
+						&nbsp;&nbsp;&nbsp;					
+						<a class="fas fa-edit fa-2x icon-green" th:href="@{'/customers/edit/' + ${customer.id}}" title="Edit this customer"></a> 
+						&nbsp;&nbsp;&nbsp;
+						<a class="fas fa-trash fa-2x icon-dark li-modal" th:href="@{/show_delete_modal(type=customers,keyField=${customer.fullName},id=${customer.id})}" title="Delete this customer"></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div th:replace="fragments :: pagination('/customers', 'customers')">Static Pagination</div>
+	
+	<div class="modal fade text-center" id="theModal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>
+	
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	$(document).ready(function(){
+
+		$(".link-detail").on("click", function(e) {
+			e.preventDefault();
+			$('#theModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});
+		
+		$(".li-modal").on('click', function (e) {
+		  e.preventDefault();
+		  $('#theModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});
+	});
+	
+	function clearFilter() {
+		window.location = "[[@{'/customers/'}]]";
+	}
+</script>
+</body>
+</html>

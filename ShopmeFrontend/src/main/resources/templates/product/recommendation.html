@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<div th:fragment="content" class="row">
+		<th:block th:each="product : ${recommendedProducts}">
+		<div class="col">
+			<div>
+				<a th:href="@{'/p/' + ${product.alias}}" th:title="${product.name}">
+					<img th:src="@{${product.mainImagePath}}" height="150" />
+					<br/>
+					<b>[[${product.shortName}]]</b>
+				</a>
+			</div>
+			<div>
+				<div th:replace="fragments :: discountPrice">Discount price</div>
+				<span th:if="${product.discountPercent > 0}">
+					<div th:replace="fragments :: listPrice">List price</div>
+				</span>
+			</div>					
+		</div>	
+		</th:block>
+	</div>
+</body>
+</html>

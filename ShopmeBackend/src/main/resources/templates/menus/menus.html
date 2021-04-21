@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	<div>
+		<h2>Manage Menus</h2>
+		<a th:href="@{/menus/new}">Create New Menu</a>		
+	</div>
+
+	<div th:if="${message != null}" class="alert alert-success text-center">
+		[[${message}]]
+	</div>	
+		
+	<div>
+		<table class="table table-striped table-bordered table-hover table-responsive-xl">
+			<thead class="thead-dark">
+				<tr>
+					<th>ID</th>
+					<th>Title</th>
+					<th>Type</th>
+					<th>Article</th>
+					<th>Enabled	</th>					
+					<th>Position</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="menu : ${listMenus}">
+					<td th:text="${menu.id}">ID</td>
+					<td th:text="${menu.title}">Title</td>
+					<td th:text="${menu.type}">Type</td>
+					<td>
+						<a th:href="@{'/articles/detail/' + ${menu.article.id}}" class="link-detail" th:title="${menu.article.title}">[[${menu.article.title}]]</a>
+					</td>					
+					<td>
+						<a th:if="${menu.enabled == true}" class="fas fa-check-circle fa-2x icon-green"
+							th:href="@{'/menus/disable/' + ${menu.id}}"
+							title="Disable this menu item"
+							>
+						</a>
+						<a th:unless="${menu.enabled == true}" class="fas fa-circle fa-2x icon-dark"
+							th:href="@{'/menus/enable/' + ${menu.id}}"
+							title="Enable this menu item"
+							>
+						</a>
+					</td>
+					<td>
+						<a th:href="@{'/menus/moveup/' + ${menu.id}}" class="fas fa-chevron-up fa-2x" title="Move this menu item up"></a>
+						<span class="m-3">[[${menu.position}]]</span>
+						<a th:href="@{'/menus/movedown/' + ${menu.id}}" class="fas fa-chevron-down fa-2x" title="Move this menu item down"></a>
+					</td>
+					
+					<td>
+						<a class="fas fa-edit fa-2x icon-green" th:href="@{'/menus/edit/' + ${menu.id}}" title="Edit this menu item"></a> 
+						&nbsp;&nbsp;&nbsp;
+						<a class="fas fa-trash fa-2x icon-dark small-link" th:href="@{/show_delete_modal(type=menus,keyField=${menu.title},id=${menu.id})}" title="Delete this menu item"></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div class="text-center m-1">
+		<span>Showing [[${#lists.size(listMenus)}]] menu items </span>
+	</div>
+
+	<div class="modal fade text-center" id="smallModal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>	
+		
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	$(document).ready(function(){
+		handleDeleteLink();
+	});
+	
+	function handleDeleteLink() {
+		$(".small-link").on("click", function(e) {
+			e.preventDefault();
+			$('#smallModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});		
+	}
+</script>
+</body>
+</html>

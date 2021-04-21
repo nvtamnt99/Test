@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: page_head(${pageTitle}, 'none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	<div>
+		<h2>Manage Articles</h2>
+		<a th:href="@{/articles/new}">Create New Article</a>		
+	</div>
+
+	<div th:replace="fragments :: search_form_and_message(url='/articles/page/1')">Search Form</div>
+	
+	<div>
+		<table class="table table-striped table-bordered table-hover table-responsive-xl">
+			<thead class="thead-dark" th:with="headerUrlPrefix = '/articles/page/' + ${currentPage} + '?sortField='">
+				<tr th:with="headerUrlPostfix = '&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}">
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'id' + ${headerUrlPostfix}}" class="text-white">ID</a>
+						<span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th width="25%">
+						<a th:href="@{${headerUrlPrefix} + 'title' + ${headerUrlPostfix}}" class="text-white">Title</a>
+						<span th:if="${sortField == 'title'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th width="25%">
+						<a th:href="@{${headerUrlPrefix} + 'type' + ${headerUrlPostfix}}" class="text-white">Type</a>
+						<span th:if="${sortField == 'type'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'user' + ${headerUrlPostfix}}" class="text-white">Created by</a>
+						<span th:if="${sortField == 'user'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'updatedTime' + ${headerUrlPostfix}}" class="text-white">Updated Time</a>
+						<span th:if="${sortField == 'updatedTime'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>					
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'published' + ${headerUrlPostfix}}" class="text-white">Published</a>
+						<span th:if="${sortField == 'published'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="article : ${listArticles}">
+					<td th:text="${article.id}">ID</td>
+					<td>
+						<a th:href="@{'/articles/detail/' + ${article.id}}" class="link-detail" th:title="${article.title}">[[${article.title}]]</a>
+					</td>
+					<td th:text="${article.type}">Type</td>
+					<td th:text="${article.user.fullName}">Created by</td>
+						
+					<td th:text="${article.updatedTime}">Updated Time</td>
+					
+					<td>
+						<a th:if="${article.published == true}" class="fas fa-check-circle fa-2x icon-green"
+							th:href="@{'/articles/unpublish/' + ${article.id}}"
+							title="Unpublish this article"
+							>
+						</a>
+						<a th:unless="${article.published == true}" class="fas fa-circle fa-2x icon-dark"
+							th:href="@{'/articles/publish/' + ${article.id}}"
+							title="Publish this article"
+							>
+						</a>
+					</td>
+					
+					<td>
+						<a class="fas fa-file-alt fa-2x icon-green link-detail" th:href="@{'/articles/detail/' + ${article.id}}" title="View details of this article"></a>
+						&nbsp;&nbsp;&nbsp;					
+						<a class="fas fa-edit fa-2x icon-green" th:href="@{'/articles/edit/' + ${article.id}}" title="Edit this article"></a> 
+						&nbsp;&nbsp;&nbsp;
+						<a class="fas fa-trash fa-2x icon-dark small-link" th:href="@{/show_delete_modal(type=articles,keyField=${article.title},id=${article.id})}" title="Delete this article"></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div th:replace="fragments :: pagination('/articles', 'articles')">Static Pagination</div>
+	
+	<div class="modal fade" id="largeModal">
+	  <div class="modal-dialog modal-xl">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>	
+
+	<div class="modal fade text-center" id="smallModal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>	
+		
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	$(document).ready(function(){
+		handleViewDetailLinks();
+		handleDeleteLink();
+	});
+	
+	function handleDeleteLink() {
+		$(".small-link").on("click", function(e) {
+			e.preventDefault();
+			$('#smallModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});		
+	}
+	
+	function handleViewDetailLinks() {
+		$(".link-detail").on("click", function(e) {
+			e.preventDefault();
+			$('#largeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});
+	}
+	
+	
+	function clearFilter() {
+		window.location = "[[@{'/articles/'}]]";
+	}
+</script>
+</body>
+</html>

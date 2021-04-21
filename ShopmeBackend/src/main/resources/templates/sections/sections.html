@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: page_head(${pageTitle}, 'none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	
+	<div>
+		<h2>Homepage Sections</h2>
+	</div>
+	<div class="mb-2">
+		Manage sections that are displayed on the website's  homepage (so the order matters).<br/>
+	</div>
+	
+	<div class="mb-2">
+		<a th:href="@{/sections/new/all_categories}">Add All Categories Section</a>	
+		&nbsp;|&nbsp;
+		<a th:href="@{/sections/new/product}">Add Product Section</a>
+		&nbsp;|&nbsp;
+		<a th:href="@{/sections/new/category}">Add Category Section</a>
+	</div>
+	<div class="mb-2">
+		<a th:href="@{/sections/new/brand}">Add Brand Section</a>
+		&nbsp;|&nbsp;
+		<a th:href="@{/sections/new/article}">Add Article Section</a>
+		&nbsp;|&nbsp;
+		<a th:href="@{/sections/new/text}">Add Text Section</a>		
+	</div>	
+	
+	<div th:if="${message != null}" class="alert alert-success text-center">
+		[[${message}]]
+	</div>
+			
+	<div>
+		<table class="table table-striped table-bordered table-hover table-responsive-xl">
+			<thead class="thead-dark">
+				<tr>
+					<th>ID</th>
+					<th>Heading</th>
+					<th>Type</th>
+					<th>Position</th>
+					<th>Enabled</th>					
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="section : ${listSections}">
+					<td th:text="${section.id}">ID</td>
+					<td th:text="${section.heading}">Heading</td>
+					<td th:text="${section.type}">Type</td>					
+					<td>
+						<a th:href="@{'/sections/moveup/' + ${section.id}}" class="fas fa-chevron-up fa-2x" title="Move this section up"></a>
+						<span class="m-3">[[${section.sectionOrder}]]</span>
+						<a th:href="@{'/sections/movedown/' + ${section.id}}" class="fas fa-chevron-down fa-2x" title="Move this section down"></a>
+					</td>
+					<td>
+						<a th:if="${section.enabled == true}" class="fas fa-check-circle fa-2x icon-green"
+							th:href="@{'/sections/disable/' + ${section.id}}"
+							title="Disable this section"
+							>
+						</a>
+						<a th:unless="${section.enabled == true}" class="fas fa-circle fa-2x icon-dark"
+							th:href="@{'/sections/enable/' + ${section.id}}"
+							title="Enable this section"
+							>
+						</a>
+					</td>
+					
+					<td>
+						<a class="fas fa-edit fa-2x icon-green" th:href="@{'/sections/edit/' + ${section.type} + '/' + ${section.id}}" title="Edit this section"></a> 
+						&nbsp;&nbsp;&nbsp;
+						<a class="fas fa-trash fa-2x icon-dark small-link" th:href="@{/show_delete_modal(type=sections,keyField=${section.heading},id=${section.id})}" title="Delete this section"></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+		
+	<div class="modal fade text-center" id="smallModal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>
+						
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	$(document).ready(function(){
+		handleDeleteLink();
+	});
+	
+	function handleDeleteLink() {
+		$(".small-link").on("click", function(e) {
+			e.preventDefault();
+			$('#smallModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});		
+	}	
+</script>
+</body>
+</html>

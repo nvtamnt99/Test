@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<head th:replace="fragments :: html_head(removeTag='tag')" />
+	 <script src="https://www.google.com/recaptcha/api.js"></script>
+</head>
+<body>
+<div class="container text-center">
+	<div th:replace="fragments :: topnav">Top Navigation Menu</div>
+		
+	<div>
+		<h2>OTP Login</h2>
+	</div>
+	<div th:if="${param.error}">
+		<p class="text-danger">Invalid OTP password.</p>
+	</div>
+			
+	<form th:action="@{/otp_login}" method="post" style="max-width: 400px; margin: 0 auto;" id="loginForm">
+	<div class="border border-secondary rounded p-3">
+		<div>
+			<p>
+				For security reason, please enter the One-Time-Password (OTP) we've sent to your email [[${email}]]				 
+			</p>
+			<p>
+				<input type="password" name="password" class="form-control" placeholder="One Time Password" required autofocus />
+			</p>
+		
+			<p class="text-center">
+				<input type="submit" value="Login" class="btn btn-primary" />
+			</p>
+		</div>
+	</div>
+	</form>		
+		
+	<div th:replace="fragments :: footer">Static footer</div>	
+</div>
+</body>
+</html>

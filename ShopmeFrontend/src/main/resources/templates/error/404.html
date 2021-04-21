@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="fragments :: topnav">Top Navigation Menu</div>
+		
+	<div th:replace="fragments :: searchnav">Search Navigation</div>
+	
+	<div th:replace="fragments :: breadcrumb">Breadcrumb Navigation</div>	
+		
+	<div class="row p-3">
+		<h2>Sorry, the page you have requested could not be found.</h2>
+	</div>
+	
+	<div th:replace="fragments :: footer">Static footer</div>	
+</div>	
+</body>
+</html>

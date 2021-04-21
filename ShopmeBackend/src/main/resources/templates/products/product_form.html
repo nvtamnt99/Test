@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="fragments :: page_head(${pageTitle}, 'none')"></div>
+	<link rel="stylesheet" th:href="@{/richtext/richtext.min.css}">
+	<script th:src="@{/richtext/jquery.richtext.min.js}"></script>	
+</head>
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	
+	<div>
+		<h2>Manage Products | [[${pageTitle}]]</h2>
+	</div>
+		
+	<form th:action="@{/products/save}" th:object="${product}" method="post" id="productForm"
+		enctype="multipart/form-data"
+		onsubmit="return checkUnique(this);" 
+		>
+	<input type="hidden" th:field="*{id}" />
+	<input type="hidden" id="ajaxURLCheckUnique" th:value="@{/products/check_unique}" />
+	<input th:if="${product.category != null}" type="hidden" id="categoryId" th:value="${product.category.id}" />
+	
+	<input type="hidden" id="ajaxURL" th:value="@{/brands/}" />
+	<div>
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+		  <li class="nav-item">
+		    <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="description-tab" data-toggle="tab" href="#descriptions" role="tab" aria-controls="description" aria-selected="false">Description</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="images-tab" data-toggle="tab" href="#images" role="tab" aria-controls="images" aria-selected="false">Images</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="false">Details</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="shipping-tab" data-toggle="tab" href="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Shipping</a>
+		  </li>		  
+		</ul>
+		<div class="tab-content" id="myTabContent">
+		  <div class="tab-pane fade show active p-3" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+			<div th:replace="products/overview :: content">Overview Form</div>  	  
+		  </div>
+		  
+		  <div class="tab-pane fade p-3" id="descriptions" role="tabpanel" aria-labelledby="description-tab">
+			<th:block sec:authorize="hasAnyAuthority('Admin', 'Editor')">
+			<div th:replace="products/description :: content">Description Form</div>
+			</th:block>
+			
+			
+			<th:block sec:authorize="hasAuthority('Salesperson')">  
+			<div th:replace="products/description_read_only :: content"></div>
+			</th:block>
+		  </div>
+		  
+		  <div class="tab-pane fade p-3" id="images" role="tabpanel" aria-labelledby="images-tab">
+		  	<th:block sec:authorize="hasAnyAuthority('Admin', 'Editor')">
+			<div th:replace="products/images :: content">Images</div>
+			</th:block>
+			
+			<th:block sec:authorize="hasAuthority('Salesperson')">  
+			<div th:replace="products/images_read_only :: content"></div>
+			</th:block>			
+		  </div>
+		  
+		  <div class="tab-pane fade p-3" id="details" role="tabpanel" aria-labelledby="details-tab">
+		  	<th:block sec:authorize="hasAnyAuthority('Admin', 'Editor')">
+			<div th:replace="products/details :: content">Details</div>
+		  	<div>
+		  		<input type="button" class="btn btn-secondary" value="Add More Detail" onclick="addNewDetailSection()" />
+		  	</div>
+		  	</th:block>
+		  	
+			<th:block sec:authorize="hasAuthority('Salesperson')">  
+			<div th:replace="products/details_read_only :: content"></div>
+			</th:block>		  				  						  	 
+		  </div>
+		  
+		  <div class="tab-pane fade p-3" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
+		  	<th:block sec:authorize="hasAnyAuthority('Admin', 'Editor')">
+			<div th:replace="products/shipping :: content">Shipping</div>
+			</th:block>
+			
+			<th:block sec:authorize="hasAuthority('Salesperson')">  
+			<div th:replace="products/shipping_read_only :: content"></div>
+			</th:block>			
+		  </div>
+		  		  
+		 </div>
+	</div>
+	<div>
+		<p class="text-center">
+			<input type="submit" value="Save" class="btn btn-primary m-3" />
+			<input type="button" value="Cancel" class="btn btn-secondary" id="buttonCancel" />
+		</p>	
+	</div>			
+	</form>
+	
+	<div th:replace="fragments :: standard_modal">Standard Modal Dialog</div>
+		
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	var extraImagesCount = 0;
+	var divDetailCount = 0;
+	var imageThumbnailSrc = "[[@{/images/image-thumbnail.png}]]";
+	
+	function checkFileSize(fileInput) {
+		fileSize = fileInput.files[0].size;
+		if (fileSize > 1048576) {
+			fileInput.setCustomValidity("You must choose an image less 1 MB!");
+			fileInput.reportValidity();
+			
+			return false;
+		} else {
+			fileInput.setCustomValidity("");
+			return true;
+		}		
+	}	
+	
+	$(document).ready(function() {
+		$("#shortDescription").richText();
+		$("#fullDescription").richText();
+		
+		$('#image').change(function() {
+			if (checkFileSize(this)) {
+				showImageThumbnail(this);				
+			}
+		});
+
+		$("input[name='extraImage']").each(function(index) {
+			extraImagesCount++;
+			$(this).change(function() {
+				showExtraImageThumbnail(this, index);
+			});			
+		});
+
+		$("a[name='linkRemove']").each(function(index) {
+			$(this).click(function() {
+				markImageToRemove(index);
+			});			
+		});
+		
+		$("a[name='linkRemoveDetail']").each(function(index) {
+			$(this).click(function() {
+				removeDetail(index);
+			});			
+		});		
+		
+		$('#buttonCancel').click(function() { 
+			window.location = "[[@{/products}]]";	
+		});
+		
+		$('#brand').change(function() { 
+			$('#category').empty();
+			getCategories();	
+		});
+
+		catIdField = $("#categoryId");
+		editMode = false;
+		
+		if (catIdField.length) {
+			editMode = true;	
+		}
+		
+		if (!editMode) getCategories();
+		
+
+		
+	});
+	
+	function getCategories() {
+		brandId = $("#brand").val();
+		url = $("#ajaxURL").val() + brandId + "/categories";		
+		
+		$.get(url, function(responseJson) {
+			categoryDropDown = $("#category");
+			
+			$.each(responseJson, function(index, category) {
+				$("<option>").val(category.id).text(category.name).appendTo(categoryDropDown);
+			});
+		});		
+	}
+
+	function showImageThumbnail(fileInput) {
+		var file = fileInput.files[0];
+		var reader = new FileReader();
+		
+		reader.onload = function(e) {
+			$('#thumbnail').attr('src', e.target.result);
+		};
+		
+		reader.readAsDataURL(file);
+	}
+	
+	function showExtraImageThumbnail(fileInput, index) {
+		if (!checkFileSize(fileInput)) {
+			return;
+		}
+		
+		file = fileInput.files[0];		
+		fileName = file.name;
+		
+		imageIdHiddenField = $("#imageId" + index);
+		if (imageIdHiddenField.length) {
+			imageId = imageIdHiddenField.val();
+			imageNameHiddenField = $("#imageName" + index);
+			imageNameHiddenField.val(fileName);
+		}
+		reader = new FileReader();
+		
+		reader.onload = function(e) {
+			$("#extraThumbnail" + index).attr('src', e.target.result);
+		};
+		
+		reader.readAsDataURL(file);
+		
+		if (index >= extraImagesCount - 1) {
+			addNewExtraImageSection(index + 1);
+		}
+	}	
+	
+	function addNewExtraImageSection(index) {
+		html = "<div class='col border m-3 p-2' id='divImage" + index + "'><div class='text-center' id='extraImageHeader" + index + "'><label>Extra Image #" + (index + 1) + ": </label></div>";
+		html += "<div class='p-2'><img id='extraThumbnail" +  index + "' alt='image preview' class='img-fluid' src='" + imageThumbnailSrc +  "'/></div>";		  		
+		html += "<div><input type='file' name='extraImage' accept='image/png, image/jpeg' onchange='showExtraImageThumbnail(this, " + index + ");' /></div></div>";
+		
+		
+		$("#divExtraImages").append(html);
+		
+		htmlLinkRemove = "<a name='linkRemove' class='btn fas fa-times-circle fa-2x icon-dark float-right' title='Remove this image' href='javascript:markImageToRemove(" + (index - 1) + ")'></a>";
+		
+		$("#extraImageHeader" + (index - 1)).append(htmlLinkRemove);
+		
+		extraImagesCount++;		
+	}
+	
+	function markImageToRemove(index) {
+		$("#divImage" + index).remove();
+	}
+	
+	function removeDetail(index) {
+		$("#divDetail" + index).remove();
+	}	
+	
+	function removeDetailById(id) {
+		$("#" + id).remove();
+	}	
+	
+	function addNewDetailSection() {
+		allDivDetails = $("[id^='divDetail']");
+		if (divDetailCount == 0) {
+			divDetailCount = allDivDetails.length;
+			previousDivDetailElement = allDivDetails[divDetailCount - 1];		
+		} else {
+			previousDivDetailElement = allDivDetails[allDivDetails.length - 1];
+		}
+		
+		previousDivDetailId = '' + previousDivDetailElement.id + '';
+		nextDivDetailId = "divDetail" + divDetailCount;
+		
+		html = "<div class='form-inline' id='" + nextDivDetailId + "'>";
+		html += "<input type='hidden' name='detailIDs' value='0' />";
+		html += "<label for='name' class='m-3'>Name:</label>";			    
+		html += "<input type='text' class='form-control w-25' name='detailNames' maxlength='256'>";
+		html += "<label for='name' class='m-3'>Value:</label>";
+		html += "<input type='text' class='form-control w-25' name='detailValues' maxlength='256'>";
+		html += "</div>";
+		  
+		$("#detailsSection").append(html); 
+		htmlLinkDelete = "<a class='btn fas fa-times-circle fa-2x icon-dark' name='linkRemoveDetail' title='Delete this detail' href=\"javascript:removeDetailById('" + previousDivDetailId + "')\"></a>";
+		$("#" + previousDivDetailId).append(htmlLinkDelete);
+		
+		divDetailCount++;
+		
+		$("input[name='detailNames']").last().focus();
+	}
+	
+	function checkUnique(form) {
+		productId = $("#id").val();		
+		productName = $("#name").val();
+		csrfValue = $("input[name='_csrf'").val();
+		url = $("#ajaxURLCheckUnique").val();
+		
+		params = {id: productId, name: productName, _csrf: csrfValue};
+		
+		$.post(url, params, function(response) {
+			if (response == "OK") {
+				form.submit();
+			} else if (response == "Duplicated") {
+				$("#modalBody").text("Warning");
+				$("#modalBody").text("There is another product having the name " + productName);
+				
+				$("#modalDialog").on("hide.bs.modal", function(e) {
+					$("#name").focus();	
+				});
+				
+				$('#modalDialog').modal();
+			} else {
+				$("#modalBody").text("Error");
+				$("#modalBody").text("Unknown response from the server");
+				$('#modalDialog').modal();
+			}
+		}).fail(function() {
+			$("#modalBody").text("Error");
+			$("#modalBody").text("Error connecting to the server");
+			$('#modalDialog').modal();
+		});
+		
+		return false;
+	}	
+</script>	
+</body>
+</html>

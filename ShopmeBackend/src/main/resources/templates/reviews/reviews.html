@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head(removeTag='none')" />
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: menu">Static Menu</div>
+	<div>
+		<h2>Manage Reviews</h2>
+		<a th:href="@{/reviews/export}">Export to CSV</a>
+	</div>
+
+	<div th:replace="fragments :: search_form_and_message(url='/reviews/page/1')">Search Form</div>
+	
+	<div>
+		<table class="table table-striped table-bordered table-hover table-responsive-xl">
+			<thead class="thead-dark" th:with="headerUrlPrefix = '/reviews/page/' + ${currentPage} + '?sortField='">
+				<tr th:with="headerUrlPostfix = '&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}">
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'id' + ${headerUrlPostfix}}" class="text-white">ID</a>
+						<span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th width="25%">
+						<a th:href="@{${headerUrlPrefix} + 'product' + ${headerUrlPostfix}}" class="text-white">Product</a>
+						<span th:if="${sortField == 'product'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th width="25%">
+						<a th:href="@{${headerUrlPrefix} + 'customer' + ${headerUrlPostfix}}" class="text-white">Customer</a>
+						<span th:if="${sortField == 'customer'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'rating' + ${headerUrlPostfix}}" class="text-white">Rating</a>
+						<span th:if="${sortField == 'rating'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>
+					<th>
+						<a th:href="@{${headerUrlPrefix} + 'reviewTime' + ${headerUrlPostfix}}" class="text-white">Review Time</a>
+						<span th:if="${sortField == 'reviewTime'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+					</th>					
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="review : ${listReviews}">
+					<td th:text="${review.id}">ID</td>
+					<td>
+						<a th:href="@{'/products/detail/' + ${review.product.id}}" class="link-detail" th:title="${review.product.name}">[[${review.product.shortName}]]</a>
+					</td>
+					<td>
+						<a th:href="@{'/customers/detail/' + ${review.customer.id}}" class="small-link">[[${review.customer.fullName}]]</a>
+					</td>
+					<td th:text="${review.rating}">Rating</td>
+					<td th:text="${review.reviewTime}">Review Time</td>				
+
+					<td>
+						<a class="fas fa-file-alt fa-2x icon-green link-detail" th:href="@{'/reviews/detail/' + ${review.id}}" title="View details of this review"></a>
+						&nbsp;&nbsp;&nbsp;					
+						<a class="fas fa-edit fa-2x icon-green" th:href="@{'/reviews/edit/' + ${review.id}}" title="Edit this review"></a> 
+						&nbsp;&nbsp;&nbsp;
+						<a class="fas fa-trash fa-2x icon-dark small-link" th:href="@{/show_delete_modal(type=reviews,keyField=${review.id},id=${review.id})}" title="Delete this review"></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div th:replace="fragments :: pagination(itemName = 'reviews')">Static Pagination</div>
+	
+	<div class="modal fade" id="largeModal">
+	  <div class="modal-dialog modal-xl">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>	
+
+	<div class="modal fade text-center" id="smallModal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	    </div>
+	  </div>
+	</div>	
+		
+	<div th:replace="fragments :: footer">Static footer</div>
+</div>	
+<script type="text/javascript">
+	$(document).ready(function(){
+		handleViewDetailLinks();
+		handleDeleteLink();
+	});
+	
+	function handleDeleteLink() {
+		$(".small-link").on("click", function(e) {
+			e.preventDefault();
+			$('#smallModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});		
+	}
+	
+	function handleViewDetailLinks() {
+		$(".link-detail").on("click", function(e) {
+			e.preventDefault();
+			$('#largeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+		});
+	}
+	
+	
+	function clearFilter() {
+		window.location = "[[@{'/reviews/'}]]";
+	}
+</script>
+</body>
+</html>

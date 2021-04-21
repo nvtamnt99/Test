@@ -1,0 +1,6 @@
+2021-04-13 03:50:25.035  WARN 6412 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5h33m27s218ms449µs400ns).
+2021-04-13 05:04:20.712  INFO 6412 --- [RMI TCP Connection(142)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2021-04-13 05:04:20.733  INFO 6412 --- [RMI TCP Connection(142)-127.0.0.1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2021-04-13 05:04:20.739  INFO 6412 --- [RMI TCP Connection(142)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-04-13 05:04:20.765  INFO 6412 --- [RMI TCP Connection(142)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2021-04-13 05:04:20.776  INFO 6412 --- [RMI TCP Connection(142)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

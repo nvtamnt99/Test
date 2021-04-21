@@ -1,0 +1,49 @@
+captchav2:
+  key: 6Ld7aMoZAAAAADRFmyy77-e3JuR20gn-4EUcIZSM
+  secret: 6Ld7aMoZAAAAAG6_YK7RxyZbnnmjiEWvVhno1uZJ
+  url: https://www.google.com/recaptcha/api/siteverify
+
+captchav3:
+  key: 6LcYp8sZAAAAAJGQqkBbDyvdlbjAZ2TqKX033lYH
+  secret: 6LcYp8sZAAAAACIU1tFgo-BlkWzarCfviPtJi1ol
+  
+server:
+  port: 80
+  servlet:
+    context-path: /Shopme
+
+spring:
+  datasource:
+    password: password
+    url: jdbc:mysql://localhost:3306/shopmedb
+    username: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+       show_sql: false
+       format_sql: true
+  mail:
+    host: smtp.gmail.com
+    password: gevhcjxprkzvcefm
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    username: codejava.net@gmail.com
+    
+  security:
+    oauth2:
+      client:
+        registration:
+         google:
+          clientId: 182557182495-4ojqb7gpdf0cee6i97md5b3tns5sbc1e.apps.googleusercontent.com            
+          clientSecret: zpJMafs7JAf4fNVLZirNcRnO
+          scope:
+           - email
+           - profile
+ 
